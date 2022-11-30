@@ -242,7 +242,11 @@ export default class Method {
                 options,
                 parameters,
                 this.visionWeb.address.toHex(address),
+<<<<<<< HEAD
                 this.inputs,
+=======
+                this.inputs
+>>>>>>> upstream/master
             );
 
             if (!transaction.result || !transaction.result.result)
