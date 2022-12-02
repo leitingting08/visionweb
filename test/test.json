@@ -143,6 +143,48 @@
                             "internalType": "uint128",
                             "name": "supplyCap",
                             "type": "uint128"
+                        },
+                        {
+                            "components": [
+                                {
+                                    "internalType": "address",
+                                    "name": "asset",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "address",
+                                    "name": "priceFeed",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "uint8",
+                                    "name": "decimals",
+                                    "type": "uint8"
+                                },
+                                {
+                                    "internalType": "uint64",
+                                    "name": "borrowCollateralFactor",
+                                    "type": "uint64"
+                                },
+                                {
+                                    "internalType": "uint64",
+                                    "name": "liquidateCollateralFactor",
+                                    "type": "uint64"
+                                },
+                                {
+                                    "internalType": "uint64",
+                                    "name": "liquidationFactor",
+                                    "type": "uint64"
+                                },
+                                {
+                                    "internalType": "uint128",
+                                    "name": "supplyCap",
+                                    "type": "uint128"
+                                }
+                            ],
+                            "internalType": "struct CometConfiguration.AssetConfig[]",
+                            "name": "assetConfigs",
+                            "type": "tuple[]"
                         }
                     ],
                     "internalType": "struct CometConfiguration.AssetConfig[]",

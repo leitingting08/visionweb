@@ -75,13 +75,22 @@ async function main() {
         '5000000000000000000000000',
         [
           [
-            '0x51A9A6B1F98DEA3E448CFDD33FCBF752F3F6B5CD',
+            '4651A9A6B1F98DEA3E448CFDD33FCBF752F3F6B5CD',
             '0xCB4E4FCD38769E0753F5520B8857F72A3BD2D8FC',
             '18',
             '825000000000000000',
             '895000000000000000',
             '950000000000000000',
-            '1000000000000000000000000'
+            '1000000000000000000000000',
+            [[
+                '4651A9A6B1F98DEA3E448CFDD33FCBF752F3F6B5CD',
+                '0xCB4E4FCD38769E0753F5520B8857F72A3BD2D8FC',
+                '18',
+                '825000000000000000',
+                '895000000000000000',
+                '950000000000000000',
+                '1000000000000000000000000'
+              ]]
           ],
           [
             '0x750A6BE6044F56F17AAB00A2BE58B1763E6770E3',
@@ -90,7 +99,16 @@ async function main() {
             '700000000000000000',
             '770000000000000000',
             '950000000000000000',
-            '125000000000000000000000'
+            '125000000000000000000000',
+            [[
+                '4651A9A6B1F98DEA3E448CFDD33FCBF752F3F6B5CD',
+                '0xCB4E4FCD38769E0753F5520B8857F72A3BD2D8FC',
+                '18',
+                '825000000000000000',
+                '895000000000000000',
+                '950000000000000000',
+                '1000000000000000000000000'
+              ]]
           ],
           [
             '0x1CA39F95B9C591976574E8105334520DA9272F62',
@@ -99,7 +117,16 @@ async function main() {
             '650000000000000000',
             '700000000000000000',
             '930000000000000000',
-            '1250000000000000000000000'
+            '1250000000000000000000000',
+            [[
+                '4651A9A6B1F98DEA3E448CFDD33FCBF752F3F6B5CD',
+                '0xCB4E4FCD38769E0753F5520B8857F72A3BD2D8FC',
+                '18',
+                '825000000000000000',
+                '895000000000000000',
+                '950000000000000000',
+                '1000000000000000000000000'
+              ]]
           ],
           [
             '4642AFAE5DE103C4290001888B1E0F89425DE81E4C',
@@ -108,7 +135,16 @@ async function main() {
             '650000000000000000',
             '700000000000000000',
             '930000000000000000',
-            '10000000000000'
+            '10000000000000',
+            [[
+                '4651A9A6B1F98DEA3E448CFDD33FCBF752F3F6B5CD',
+                '0xCB4E4FCD38769E0753F5520B8857F72A3BD2D8FC',
+                '18',
+                '825000000000000000',
+                '895000000000000000',
+                '950000000000000000',
+                '1000000000000000000000000'
+              ]]
           ]
         ]
       ]
@@ -124,16 +160,14 @@ async function main() {
     const resolveType = (inputsObj) => { // values, inputs(includes types)
         const typearr = inputsObj?.components || [] // types
         const type = inputsObj?.type
-        if(type === 'tuple') {
-            const newarr = typearr.map((comp, tindex) => comp.type.indexOf('tuple[') > -1 ? resolveType(typearr?.[tindex]): comp.type)
-            return `tuple(${newarr.join(',')})`
+        if(type.indexOf('tuple') > -1) {
+            const newarr = typearr.map((comp, tindex) => comp.type.indexOf('tuple') > -1 ? resolveType(typearr?.[tindex]): comp.type)
+            return `tuple(${newarr.join(',')})${type.indexOf('tuple[') > -1 ? '[]': ''}`
         } 
         else if (/vrcToken/.test()) {
             return  type.replace(/vrcToken/, "uint256");
-        }
-        else if(type.indexOf('tuple[') > -1) {
-            return `tuple(${typearr.map(({type})=>type).join(',')})[]`
-        } else return type
+        } 
+        else return type
     }
     const resolveValue = (arr = [], inputs) => {
         const values = [];
@@ -155,12 +189,12 @@ async function main() {
 
             else if(type === "tuple") { // tuple
                 const comps = inputs?.[i]?.components || []
-                value =  resolveValue(comps.map((i,index)=>({type:i.type, value: value?.[index]})), comps)
+                value =  resolveValue(comps.map((i,index)=>({type:i?.type, value: value?.[index]})), comps)
             }
 
             else if (type.indexOf("tuple[") > -1 ) { // tuple array
                 const comps = inputs?.[i]?.components || []
-                value = value.map(item=>resolveValue(item.map((j,subindex)=>({type: comps?.[subindex]?.type, value: j})), comps))
+                value = value.map(item=>resolveValue(item?.map((j,subindex)=>({type: comps?.[subindex]?.type, value: j})), comps))
             }
             values.push(value);
            
@@ -169,8 +203,9 @@ async function main() {
         
     }
     const types = inputinit.map(item=>resolveType(item))
+    console.log('types', types)
     const values = resolveValue(parameters, inputinit)
-
+    console.log('values', JSON.stringify(values))
     parameters = abiCoder
                     .encode(types, values)
                     .replace(/^(0x)/, "");
